@@ -1,6 +1,6 @@
 from django.db import models
-from room.models import Room
-from customer.models import Customer
+from applications.room.models import Room
+from applications.customer.models import Customer
 
 # Create your models here.
 
