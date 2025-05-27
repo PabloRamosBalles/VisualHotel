@@ -6,7 +6,7 @@ from applications.hotel.models import Hotel
 
 class Room(models.Model):
     id = models.AutoField(primary_key=True)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, null=True, blank=True)
     number = models.CharField(max_length=10, unique=True)
     room_type = models.CharField(max_length=50)
     status = models.CharField(max_length=50)
