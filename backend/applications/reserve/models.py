@@ -1,4 +1,5 @@
 from django.db import models
+from applications.hotel.models import Hotel
 from applications.room.models import Room
 from applications.customer.models import Customer
 
@@ -6,6 +7,7 @@ from applications.customer.models import Customer
 
 class Reserve(models.Model):
     id = models.AutoField(primary_key=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     check_in = models.DateField()
