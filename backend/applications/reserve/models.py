@@ -5,6 +5,7 @@ from applications.customer.models import Customer
 # Create your models here.
 
 class Reserve(models.Model):
+    id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     check_in = models.DateField()
