@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'applications.reserve',
     'applications.room',
     'applications.customer',
+    'applications.hotel'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
