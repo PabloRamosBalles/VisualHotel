@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'visualhotel.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# TODO: CREAR EL .ENV PARA LAS VARIABLES DE LA DB
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
