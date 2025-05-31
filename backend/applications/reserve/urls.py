@@ -6,5 +6,6 @@ from applications.reserve import views
 
 router = DefaultRouter()
 urlpatterns = [
-    path('api/reserves/', views.reserve_list, name='reserve-list-create'),
+    path('api/all/reserves/', views.reserve_list, name='reserve-list-create'),
+    path('api/reserves/', views.ReserveViewSet.as_view({'get': 'list', 'post': 'create', 'put': 'update', 'delete': 'destroy'})),
 ]

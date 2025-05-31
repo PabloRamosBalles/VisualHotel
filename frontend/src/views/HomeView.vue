@@ -4,7 +4,7 @@
     <nav class="navbar">
       <div class="nav-content">
         <div class="logo">VisualHotel</div>
-        <button class="client-access">Acceso Clientes</button>
+        <button class="client-access" @click="openLogin">Acceso Clientes</button>
       </div>
     </nav>
 
@@ -56,6 +56,18 @@
       </div>
       <p>&copy; 2025 VisualHotel. Todos los derechos reservados.</p>
     </footer>
+    <div v-if="showLogin" class="modal-overlay">
+      <div class="modal">
+        <h2>Iniciar sesión</h2>
+        <form @submit.prevent="login">
+          <input v-model="loginEmail" type="email" placeholder="Email" required />
+          <input v-model="loginPassword" type="password" placeholder="Contraseña" required />
+          <button type="submit">Entrar</button>
+          <button type="button" @click="showLogin = false">Cancelar</button>
+        </form>
+        <p v-if="loginError" class="error">{{ loginError }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -82,11 +94,18 @@ export default {
           text: 'Tu comodidad es nuestra prioridad.',
         },
       ],
-      interval: null
+      interval: null,
+      showLogin: false,
+      loginEmail: '',
+      loginPassword: '',
+      loginError: '',
     };
   },
   
   methods: {
+    goToClientAccess() {
+      this.$router.push({ name: 'ClientAccess' })
+    },
     startAutoSlide() {
       this.interval = setInterval(this.nextSlide, 5000)
     },
@@ -96,6 +115,34 @@ export default {
     prevSlide() {
       this.currentSlide =
         (this.currentSlide - 1 + this.slides.length) % this.slides.length
+    },
+    openLogin() {
+      this.showLogin = true;
+      this.loginError = '';
+      this.loginEmail = '';
+      this.loginPassword = '';
+    },
+    async login() {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/login/', {
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.loginEmail,
+            password: this.loginPassword,
+          }),
+        })
+        if (!res.ok) throw new Error('Credenciales incorrectas');
+        const data = await res.json();
+        localStorage.setItem('access', data.access);
+        localStorage.setItem('refresh', data.refresh);
+        this.showLogin = false;
+        this.$router.push({ name: 'PanelView' });
+      }catch (error) {
+        this.loginError = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
+      }
     }
   },
   beforeUnmount() {
@@ -123,7 +170,7 @@ html, body {
 
 .navbar {
   background-color: #ff8c00;
-  padding: 1rem 2rem;
+  padding: 0.3rem 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
@@ -138,7 +185,7 @@ html, body {
   }
 
   .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #fff;
   }
@@ -237,7 +284,24 @@ html, body {
     }
   }
 }
-
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  min-width: 300px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+.error {
+  color: red;
+  margin-top: 1rem;
+}
 .footer {
   background-color: #ff8c00;
   color: #fff;
