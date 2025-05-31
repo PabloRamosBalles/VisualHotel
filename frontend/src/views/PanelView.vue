@@ -48,7 +48,7 @@ export default {
     methods: {
         async fetchReservations() {
             const token = localStorage.getItem('access')
-            const res = await fetch('http://127.0.0.1:8000(api/reserves/', {
+            const res = await fetch('http://127.0.0.1:8000/api/reserves/', {
                 headers : {
                     'Authorization': `Bearer ${token}`
                 }
@@ -68,7 +68,10 @@ export default {
         // deleteReservation(id) {
         //     // lógica para eliminar reserva
         // }    
-    }
+    },
+    mounted() {
+        this.fetchReservations()
+    },
 }
 </script>
 

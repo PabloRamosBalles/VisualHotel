@@ -130,16 +130,18 @@ export default {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            email: this.loginEmail,
+            username: this.loginEmail,
             password: this.loginPassword,
           }),
         })
         if (!res.ok) throw new Error('Credenciales incorrectas');
         const data = await res.json();
+        console.log(data);
         localStorage.setItem('access', data.access);
         localStorage.setItem('refresh', data.refresh);
         this.showLogin = false;
-        this.$router.push({ name: 'PanelView' });
+        console.log('Tokens guardados, redirigiendo...');
+        this.$router.push({ name: 'panel' });
       }catch (error) {
         this.loginError = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
       }
