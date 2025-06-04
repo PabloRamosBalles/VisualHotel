@@ -103,9 +103,9 @@ export default {
   },
   
   methods: {
-    goToClientAccess() {
-      this.$router.push({ name: 'ClientAccess' })
-    },
+    // goToClientAccess() {
+    //   this.$router.push({ name: 'ClientAccess' })
+    // },
     startAutoSlide() {
       this.interval = setInterval(this.nextSlide, 5000)
     },
@@ -124,7 +124,7 @@ export default {
     },
     async login() {
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/login/', {
+        const res = await fetch('http://127.0.0.1:8001/api/login/', {
           method: 'POST',
           headers:{
             'Content-Type': 'application/json',
@@ -295,15 +295,78 @@ html, body {
 }
 .modal {
   background: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  min-width: 300px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 14px;
+  min-width: 320px;
+  box-shadow: 0 4px 24px rgba(255, 140, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #ff8c00;
 }
-.error {
-  color: red;
-  margin-top: 1rem;
+.modal h2 {
+  color: #ff8c00;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 1.6rem;
 }
+.modal form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+}
+.modal input[type="email"],
+.modal input[type="password"] {
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #ffb366;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.modal input[type="email"]:focus,
+.modal input[type="password"]:focus {
+  border: 1.5px solid #ff8c00;
+}
+.modal button[type="submit"] {
+  background: linear-gradient(90deg, #ff8c00 60%, #ffb366 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+.modal button[type="submit"]:hover {
+  background: linear-gradient(90deg, #ffb366 0%, #ff8c00 100%);
+}
+.modal button[type="button"] {
+  background: #fff;
+  color: #ff8c00;
+  border: 1.5px solid #ff8c00;
+  border-radius: 6px;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.25rem;
+  transition: background 0.2s, color 0.2s;
+}
+.modal button[type="button"]:hover {
+  background: #ff8c00;
+  color: #fff;
+}
+.modal .error {
+  color: #ff4d00;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
 .footer {
   background-color: #ff8c00;
   color: #fff;
