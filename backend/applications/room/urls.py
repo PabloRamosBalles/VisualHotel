@@ -7,4 +7,5 @@ from applications.room import views
 router = DefaultRouter()
 urlpatterns = [
     path('api/rooms/', views.rooms, name='room-list-create'),
+    path('api/rooms/<int:id>/', views.rooms),
 ]

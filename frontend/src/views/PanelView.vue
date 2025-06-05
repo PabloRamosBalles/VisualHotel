@@ -10,6 +10,10 @@
         + Nueva Reserva
       </button>
     </div>
+    <div v-if="successMessage"
+     :class="['success-message', { 'fade-out': !successVisible }]">
+      {{ successMessage }}
+    </div>
     <div v-if="showCreatePopup" class="modal-overlay">
     <div class="modal">
       <h2>Nueva Reserva</h2>
@@ -52,7 +56,7 @@
           <button @click="editReservation(reservation.id)" title="Editar">
             <i class="fas fa-pen"></i>
           </button>
-          <button @click="deleteReservation(reservation.id)" title="Eliminar">
+          <button @click="deleteReservation(reservation.id, reservation.room.id)" title="Eliminar">
             <i class="fas fa-trash"></i>
           </button>
         </div>
@@ -77,10 +81,12 @@ export default {
               room: '',
               check_in: '',
               check_out: '',
-              hotel: null // Asigna el hotel correspondiente
+              hotel: null
             },
             availableRooms: [],
-            createError: ''
+            createError: '',
+            successMessage: '',
+            successVisible: false
         }
     },
     methods: {
@@ -104,11 +110,13 @@ export default {
           // Asigna el hotel automáticamente si ya tienes reservas
           if (this.reservations.length > 0) {
             this.newReservation.hotel = this.reservations[0].hotel.id;
+            console.log("ID HOTEL:", this.newReservation)
           }
         },
         async submitReservation() {
           try {
             const token = localStorage.getItem('access');
+            console.log("RESERVATION DATA:", this.newReservation);
             const res = await fetch('http://127.0.0.1:8001/api/reserves/', {
               method: 'POST',
               headers: {
@@ -120,7 +128,15 @@ export default {
             if (!res.ok) throw new Error('Error al crear la reserva');
             this.showCreatePopup = false;
             this.createError = '';
+            this.successMessage = '¡Reserva creada con éxito!';
+            this.successVisible = true;
             this.fetchReservations();
+            setTimeout(() => {
+              this.successVisible = false;
+              setTimeout(() => {
+                this.successMessage = '';
+              }, 300); 
+            }, 3000);
           } catch (e) {
             this.createError = 'No se pudo crear la reserva';
           }
@@ -138,6 +154,40 @@ export default {
             } else {
                 this.reservations = []
             }
+        },
+        async deleteReservation(reservationId, roomId) {
+          if (confirm('¿Estás seguro de que quieres borrar esta reserva?')) {
+            const token = localStorage.getItem('access');
+            // Borra la reserva
+            const res = await fetch(`http://127.0.0.1:8001/api/reserves/${reservationId}/`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            if (res.ok) {
+              // Cambia el estado de la habitación a Disponible
+              await fetch(`http://127.0.0.1:8001/api/rooms/${roomId}/`, {
+                method: 'PATCH',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 'Disponible' })
+              });
+              this.successMessage = 'Reserva eliminada correctamente';
+              this.successVisible = true;
+              this.fetchReservations();
+              setTimeout(() => {
+                this.successVisible = false;
+                setTimeout(() => {
+                  this.successMessage = '';
+                }, 300);
+              }, 2000);
+            } else {
+              alert('No se pudo borrar la reserva');
+            }
+          }
         },
         logout() {
           localStorage.removeItem('access');
@@ -270,5 +320,26 @@ export default {
 #logout-btn:hover {
   background: linear-gradient(90deg, #ffb366 0%, #ff8c00 100%);
   color: #fff;
+}
+.success-message {
+  background: linear-gradient(90deg, #ffb366 0%, #ff8c00 100%);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(255,140,0,0.10);
+  text-align: center;
+  animation: fadeIn 0.5s;
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+.success-message.fade-out {
+  opacity: 0;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px);}
+  to { opacity: 1; transform: translateY(0);}
 }
 </style>

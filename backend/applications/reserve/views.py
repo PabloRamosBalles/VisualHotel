@@ -2,8 +2,13 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
 
-from rest_framework import viewsets
+
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
+
+from applications.customer.models import Customer
+from applications.room.models import Room
 
 from .models import Reserve
 from .serializers import ReserveSerializer
@@ -17,6 +22,38 @@ class ReserveViewSet(viewsets.ModelViewSet):
         if user.is_authenticated and user.hotel:
             return Reserve.objects.filter(hotel=user.hotel)
         return Reserve.objects.none()
+    
+    def create(self, request, *args, **kwargs):
+        customer_data = request.data.get('customer')
+        room_id = request.data.get('room')
+        hotel_id = request.data.get('hotel')
+        check_in = request.data.get('check_in')
+        check_out = request.data.get('check_out')
+
+        customer = Customer.objects.create(**customer_data)
+        room = Room.objects.get(id=room_id)
+        room.status = 'Ocupada'
+        room.save()
+
+        reserve = Reserve.objects.create(
+            hotel_id=hotel_id,
+            room=room,
+            customer=customer,
+            check_in=check_in,
+            check_out=check_out
+        )
+        serializer = self.get_serializer(reserve)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def destroy(self, request, *args, **kwargs):
+        print("BORRANDO RESERVA")
+        instance = self.get_object()
+        room = instance.room
+        self.perform_destroy(instance)
+        # Cambia el estado de la habitación a Disponible
+        room.status = 'Disponible'
+        room.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @csrf_exempt
 def reserve_list(request):
