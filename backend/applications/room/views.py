@@ -1,9 +1,13 @@
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+
 from django.http.response import JsonResponse
 
 from rest_framework import viewsets
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
+
 
 from .models import Room
 from .serializers import RoomSerializer
@@ -12,10 +16,20 @@ class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
-@csrf_exempt
-def room_list(request):
+@api_view(['GET', 'POST', 'PUT'])
+@permission_classes([IsAuthenticated])
+def rooms(request):
+    print("Usuario:", request.user, "Autenticado:", request.user.is_authenticated, "Hotel:", getattr(request.user, 'hotel', None))
+    print("Method:", request.method)
     if request.method == 'GET':
-        rooms = Room.objects.all()
+        # rooms = Room.objects.all()
+        # serializer = RoomSerializer(rooms, many=True)
+        # return JsonResponse(serializer.data, safe=False)
+        user = request.user
+        if user.hotel:
+            rooms = Room.objects.filter(hotel=user.hotel, status='Disponible')
+        else:
+            rooms = Room.objects.none()
         serializer = RoomSerializer(rooms, many=True)
         return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST':

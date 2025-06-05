@@ -1,12 +1,36 @@
 <template>
   <div id="reservation-page">
+    <button id="logout-btn" @click="logout" title="Cerrar sesión">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
     <div id="reservation-header">
       <h1 id="reservation-title">Reservas</h1>
+      <h1 v-if="reservations.length > 0">{{ reservations[0].hotel.name }}</h1>
       <button id="btn-create-reservation" @click="createReservation">
         + Nueva Reserva
       </button>
     </div>
-
+    <div v-if="showCreatePopup" class="modal-overlay">
+    <div class="modal">
+      <h2>Nueva Reserva</h2>
+      <form @submit.prevent="submitReservation">
+        <input v-model="newReservation.customer.first_name" type="text" placeholder="Nombre" required />
+        <input v-model="newReservation.customer.last_name" type="text" placeholder="Apellido" required />
+        <input v-model="newReservation.customer.email" type="email" placeholder="Email" required />
+        <input v-model="newReservation.customer.phone" type="text" placeholder="Teléfono" required />
+        <select v-model="newReservation.room" required>
+          <option v-for="room in availableRooms" :key="room.id" :value="room.id">
+            {{ room.number }} ({{ room.room_type }})
+          </option>
+        </select>
+        <input v-model="newReservation.check_in" type="date" required />
+        <input v-model="newReservation.check_out" type="date" required />
+        <button type="submit">Crear Reserva</button>
+        <button type="button" @click="showCreatePopup = false">Cancelar</button>
+      </form>
+      <p v-if="createError" class="error">{{ createError }}</p>
+    </div>
+  </div>
     <div v-if="reservations.length === 0">
       <p id="no-reservations">No hay reservas registradas.</p>
     </div>
@@ -18,12 +42,11 @@
         class="reservation-card"
       >
         <div class="reservation-info">
-          <p><strong>ID:</strong> {{ reservation.id }}</p>
+          <p><strong>ID Reserva:</strong> {{ reservation.id }}</p>          
+          <p><strong>Habitación:</strong> {{ reservation.room.number }} ({{ reservation.room.room_type }})</p>
+          <p><strong>Cliente:</strong> {{ reservation.customer.first_name }} {{ reservation.customer.last_name }}</p>
           <p><strong>Check-in:</strong> {{ reservation.check_in }}</p>
           <p><strong>Check-out:</strong> {{ reservation.check_out }}</p>
-          <p><strong>Hotel ID:</strong> {{ reservation.hotel }}</p>
-          <p><strong>Habitación ID:</strong> {{ reservation.room }}</p>
-          <p><strong>Cliente ID:</strong> {{ reservation.customer }}</p>
         </div>
         <div class="reservation-actions">
           <button @click="editReservation(reservation.id)" title="Editar">
@@ -42,10 +65,66 @@ export default {
     name: 'PanelView',
     data() {
         return{
-            reservations: []
+            reservations: [],
+            showCreatePopup: false,
+            newReservation: {
+              customer: {
+                first_name: '',
+                last_name: '',
+                email: '',
+                phone: ''
+              },
+              room: '',
+              check_in: '',
+              check_out: '',
+              hotel: null // Asigna el hotel correspondiente
+            },
+            availableRooms: [],
+            createError: ''
         }
     },
     methods: {
+        async fetchAvailableRooms() {
+          // Suponiendo que tienes el hotel id en this.reservations[0].hotel.id
+          const token = localStorage.getItem('access');
+          if (!token) return;
+          const res = await fetch(`http://127.0.0.1:8001/api/rooms/`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          if (res.ok) {
+            this.availableRooms = await res.json();
+          }
+        },
+        createReservation() {
+          this.showCreatePopup = true;
+          this.fetchAvailableRooms();
+          // Asigna el hotel automáticamente si ya tienes reservas
+          if (this.reservations.length > 0) {
+            this.newReservation.hotel = this.reservations[0].hotel.id;
+          }
+        },
+        async submitReservation() {
+          try {
+            const token = localStorage.getItem('access');
+            const res = await fetch('http://127.0.0.1:8001/api/reserves/', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'              
+              },
+              body: JSON.stringify(this.newReservation)
+            });
+            if (!res.ok) throw new Error('Error al crear la reserva');
+            this.showCreatePopup = false;
+            this.createError = '';
+            this.fetchReservations();
+          } catch (e) {
+            this.createError = 'No se pudo crear la reserva';
+          }
+        },
         async fetchReservations() {
             const token = localStorage.getItem('access')
             const res = await fetch('http://127.0.0.1:8001/api/reserves/', {
@@ -55,19 +134,16 @@ export default {
             });
             if (res.ok) {
                 this.reservations = await res.json()
+                console.log(this.reservations)
             } else {
                 this.reservations = []
             }
         },
-        // createReservation() {
-        //     // lógica para crear reserva
-        // },
-        // editReservation(id) {
-        //     // lógica para editar reserva
-        // },
-        // deleteReservation(id) {
-        //     // lógica para eliminar reserva
-        // }    
+        logout() {
+          localStorage.removeItem('access');
+          localStorage.removeItem('refresh');
+          this.$router.push({ name: 'home' });
+        },   
     },
     mounted() {
         this.fetchReservations()
@@ -86,6 +162,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  margin-top: 28px;
 }
 
 #reservation-title {
@@ -166,5 +243,32 @@ export default {
 
 .reservation-actions button:hover {
   color: #ff4d4d;
+}
+
+#logout-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: linear-gradient(90deg, #ff8c00 60%, #ffb366 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(255,140,0,0.08);
+  transition: background 0.2s, color 0.2s;
+  z-index: 10;
+}
+#logout-btn i {
+  font-size: 18px;
+}
+#logout-btn:hover {
+  background: linear-gradient(90deg, #ffb366 0%, #ff8c00 100%);
+  color: #fff;
 }
 </style>
