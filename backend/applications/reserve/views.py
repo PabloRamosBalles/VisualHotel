@@ -6,6 +6,7 @@ from django.http.response import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
+from datetime import date
 
 from applications.customer.models import Customer
 from applications.room.models import Room
@@ -20,7 +21,11 @@ class ReserveViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated and user.hotel:
-            return Reserve.objects.filter(hotel=user.hotel, is_active=True)
+            reservas = Reserve.objects.filter(hotel=user.hotel, is_active=True)
+            rooms = Room.objects.filter(hotel=user.hotel)
+            for room in rooms:
+                update_room_status(room)
+            return reservas
         return Reserve.objects.none()
     
     def create(self, request, *args, **kwargs):
@@ -32,8 +37,6 @@ class ReserveViewSet(viewsets.ModelViewSet):
 
         customer = Customer.objects.create(**customer_data)
         room = Room.objects.get(id=room_id)
-        room.status = 'Ocupada'
-        room.save()
 
         reserve = Reserve.objects.create(
             hotel_id=hotel_id,
@@ -42,6 +45,7 @@ class ReserveViewSet(viewsets.ModelViewSet):
             check_in=check_in,
             check_out=check_out
         )
+        update_room_status(room)
         serializer = self.get_serializer(reserve)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
@@ -52,8 +56,7 @@ class ReserveViewSet(viewsets.ModelViewSet):
         # self.perform_destroy(instance)
         instance.is_active = False
         instance.save()
-        room.status = 'Disponible'
-        room.save()
+        update_room_status(room)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     def partial_update(self, request, *args, **kwargs):
@@ -63,12 +66,26 @@ class ReserveViewSet(viewsets.ModelViewSet):
         response = super().partial_update(request, *args, **kwargs)
         instance.refresh_from_db()
 
-        if old_room != instance.room:
-            old_room.status = 'Disponible'
-            old_room.save()
-            instance.room.status = 'Ocupada'
-            instance.room.save()
+        update_room_status(old_room)
+        update_room_status(instance.room)
         return response
+
+def update_room_status(room):
+    today = date.today()
+    # ¿Hay alguna reserva activa para esta habitación en curso o futura?
+    reservas_activas = Reserve.objects.filter(
+        room=room,
+        is_active=True,
+        check_out__gt=today
+    )
+    if reservas_activas.exists():
+        if room.status != 'Ocupada':
+            room.status = 'Ocupada'
+            room.save()
+    else:
+        if room.status != 'Disponible':
+            room.status = 'Disponible'
+            room.save()
 
 @csrf_exempt
 def reserve_list(request):

@@ -78,8 +78,18 @@
           <p><strong>Cliente:</strong> {{ reservation.customer.first_name }} {{ reservation.customer.last_name }}</p>
           <p><strong>Email:</strong> {{ reservation.customer.email }}</p>
           <p><strong>Teléfono:</strong> {{ reservation.customer.phone }}</p>
-          <p><strong>Check-in:</strong> {{ reservation.check_in }}</p>
-          <p><strong>Check-out:</strong> {{ reservation.check_out }}</p>
+          <p>
+            <strong>Check-in:</strong>
+            <span :style="{ color: isCheckInActive(reservation.check_in) }">
+              {{ reservation.check_in }}
+            </span>
+          </p>
+          <p>
+            <strong>Check-out:</strong>
+            <span :style="{ color: isCheckOutActive(reservation.check_out) }">
+              {{ reservation.check_out }}
+            </span>
+          </p>
         </div>
         <div class="reservation-actions">
           <button @click="editReservation(reservation.id)" title="Editar">
@@ -307,6 +317,22 @@ export default {
               alert('No se pudo borrar la reserva');
             }
           }
+        },
+        isCheckInActive(checkIn) {
+          // Si el día del check-in es HOY o anterior, verde; si es futuro, rojo
+          const today = new Date();
+          today.setHours(0,0,0,0);
+          const inDate = new Date(checkIn);
+          inDate.setHours(0,0,0,0);
+          return inDate <= today ? 'green' : 'red';
+        },
+        isCheckOutActive(checkOut) {
+          // Si el día del check-out es HOY o posterior, rojo; si ya pasó, verde
+          const today = new Date();
+          today.setHours(0,0,0,0);
+          const outDate = new Date(checkOut);
+          outDate.setHours(0,0,0,0);
+          return outDate >= today ? 'red' : 'green';
         },
         logout() {
           localStorage.removeItem('access');
