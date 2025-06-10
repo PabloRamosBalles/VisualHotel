@@ -31,6 +31,127 @@
   background-color: #2e2c44;
 }
 
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(255, 140, 0, 0.18);
+  min-width: 370px;
+  max-width: 95vw;
+  padding: 2.5rem 2.2rem 2rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.4s;
+  position: relative;
+}
+
+.modal h2 {
+  color: #ff8c00;
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.modal form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  max-width: 320px;
+  background: #eaf4fb;
+  border: none;
+  border-radius: 18px;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.08rem;
+  margin-bottom: 1.1rem;
+  outline: none;
+  transition: box-shadow 0.2s, border 0.2s;
+  box-shadow: 0 2px 8px rgba(255,140,0,0.07);
+}
+
+.modal input:focus,
+.modal select:focus {
+  box-shadow: 0 0 0 2px #ffb36655;
+  border: 1.5px solid #ff8c00;
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+  width: 100%;
+}
+
+.modal-buttons button {
+  min-width: 120px;
+  border-radius: 18px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  padding: 0.85rem 0;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 2px 8px rgba(255,140,0,0.10);
+}
+
+.modal-buttons button[type="submit"] {
+  background: linear-gradient(90deg, #ff8c00 60%, #ffb366 100%);
+  color: #fff;
+}
+
+.modal-buttons button[type="submit"]:hover {
+  background: linear-gradient(90deg, #ffb366 0%, #ff8c00 100%);
+  color: #fff;
+  transform: translateY(-2px) scale(1.03);
+}
+
+.modal-buttons button[type="button"] {
+  background: #fff;
+  color: #ff8c00;
+  border: 2px solid #ff8c00;
+}
+
+.modal-buttons button[type="button"]:hover {
+  background: #ff8c00;
+  color: #fff;
+  border: 2px solid #ffb366;
+}
+
+.modal .error {
+  color: #ff4d4d;
+  margin-top: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .modal {
+    min-width: 0;
+    width: 98vw;
+    padding: 1.2rem 0.5rem;
+  }
+  .modal input,
+  .modal select {
+    max-width: 98vw;
+  }
+}
+
 #no-reservations {
   font-style: italic;
   color: #888;

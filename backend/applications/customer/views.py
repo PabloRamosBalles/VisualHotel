@@ -24,11 +24,17 @@ def customer_list(request):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
         data = JSONParser().parse(request)
-        customer = Customer.objects.get(id=data['id'])
-        serializer = CustomerSerializer(customer, data=data)
+        print(data)
+        try:
+            customer = Customer.objects.get(id=data.get('customer_id'))
+        except Customer.DoesNotExist:
+            return JsonResponse({'error': 'Customer not found'}, status=404)
+        data.pop('customer_id', None)
+        serializer = CustomerSerializer(customer, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
+        print(serializer.errors)
         return JsonResponse(serializer.errors, status=400)

@@ -46,13 +46,6 @@
     </section>
 
     <!-- About Section -->
-    <!-- <section class="about-section">
-      <h2>Sobre VisualHotel</h2>
-      <p>
-        VisualHotel es una plataforma moderna para gestionar reservas y habitaciones de manera eficiente y simple. Nuestro objetivo es digitalizar la experiencia hotelera para clientes y administradores por igual.
-      </p>
-    </section>
-    <br> -->
     <section class="about-steps-section">
       <div class="about-steps-grid">
         <div class="about-step">

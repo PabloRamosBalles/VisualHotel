@@ -13,6 +13,7 @@ class Reserve(models.Model):
     check_in = models.DateField()
     check_out = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Reserva {self.id} - Habitación {self.room.number}"
