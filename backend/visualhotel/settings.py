@@ -87,22 +87,22 @@ WSGI_APPLICATION = 'visualhotel.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # TODO: CREAR EL .ENV PARA LAS VARIABLES DE LA DB
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'visualhotel',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': env('DB_NAME'),
-    #     'USER': env('DB_USER'),
-    #     'PASSWORD': env('DB_PASSWORD'),
-    #     'HOST': env('DB_HOST'),
-    #     'PORT': env('DB_PORT'),
+    #     'NAME': 'visualhotel',
+    #     'USER': 'admin',
+    #     'PASSWORD': 'admin',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
     # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'visualhoteldb',
+        'USER': 'admin',
+        'PASSWORD': 'bL8FdoxCsuiRTc1o1MCtrwc6j7L6W9xB',
+        'HOST': 'dpg-d141r524d50c73efppm0-a',
+        'PORT': '5432',
+    }
 }
 
 
