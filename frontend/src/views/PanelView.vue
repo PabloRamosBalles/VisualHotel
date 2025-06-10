@@ -199,7 +199,7 @@ export default {
             this.createError = '';
             this.successMessage = '¡Reserva creada con éxito!';
             this.successVisible = true;
-            this.fetchReservations();
+            await this.fetchReservations();
             setTimeout(() => {
               this.successVisible = false;
               setTimeout(() => {
