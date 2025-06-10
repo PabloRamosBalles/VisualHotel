@@ -382,6 +382,6 @@ export default {
 }
 </script>
 
-<style lang="scss" src="@/assets/styles/panel.scss">
+<style lang="scss" src="../assets/styles/panel.scss">
 
 </style>
