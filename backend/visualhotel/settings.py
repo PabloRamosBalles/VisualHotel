@@ -100,7 +100,7 @@ DATABASES = {
         'NAME': 'visualhoteldb',
         'USER': 'admin',
         'PASSWORD': 'bL8FdoxCsuiRTc1o1MCtrwc6j7L6W9xB',
-        'HOST': 'dpg-d141r524d50c73efppm0-a',
+        'HOST': 'dpg-d141r524d50c73efppm0-a.oregon-postgres.render.com',
         'PORT': '5432',
     }
 }
