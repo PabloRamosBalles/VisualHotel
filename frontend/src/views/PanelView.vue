@@ -10,6 +10,18 @@
         + Nueva Reserva
       </button>
     </div>
+    <div id="filter-bar" style="margin-bottom: 1rem;">
+      <label>
+        Desde:
+        <input type="date" v-model="filterStartDate">
+      </label>
+      <label>
+        Hasta:
+        <input type="date" v-model="filterEndDate">
+      </label>
+      <button @click="applyDateFilter">Filtrar</button>
+      <button @click="clearDateFilter" v-if="filterStartDate || filterEndDate">Limpiar</button>
+    </div>
     <div v-if="successMessage"
      :class="['success-message', { 'fade-out': !successVisible }]">
       {{ successMessage }}
@@ -68,7 +80,7 @@
 
     <div v-else id="reservation-list">
       <div
-        v-for="reservation in reservations"
+        v-for="reservation in filteredReservations"
         :key="reservation.id"
         class="reservation-card"
       >
@@ -140,7 +152,10 @@ export default {
             createError: '',
             editError: '',
             successMessage: '',
-            successVisible: false
+            successVisible: false,
+            filterStartDate: '',
+            filterEndDate: '',
+            filteredReservations: [],
         }
     },
     methods: {
@@ -278,10 +293,11 @@ export default {
                 }
             });
             if (res.ok) {
-                this.reservations = await res.json()
-                console.log(this.reservations)
+                this.reservations = (await res.json()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                this.filteredReservations = this.reservations.slice();
             } else {
                 this.reservations = []
+                this.filteredReservations = []
             }
         },
         async deleteReservation(reservationId, roomId) {
@@ -317,6 +333,26 @@ export default {
               alert('No se pudo borrar la reserva');
             }
           }
+        },
+        applyDateFilter() {
+          this.filteredReservations = this.reservations
+            .filter(res => {
+              const checkIn = new Date(res.check_in);
+              let valid = true;
+              if (this.filterStartDate) {
+                valid = valid && checkIn >= new Date(this.filterStartDate);
+              }
+              if (this.filterEndDate) {
+                valid = valid && checkIn <= new Date(this.filterEndDate);
+              }
+              return valid;
+            })
+            .sort((a, b) => new Date(a.check_in) - new Date(b.check_in));
+        },
+        clearDateFilter() {
+          this.filterStartDate = '';
+          this.filterEndDate = '';
+          this.filteredReservations = this.reservations.slice()
         },
         isCheckInActive(checkIn) {
           // Si el día del check-in es HOY o anterior, verde; si es futuro, rojo
