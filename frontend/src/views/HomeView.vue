@@ -197,7 +197,7 @@ export default {
     },
     async login() {
       try {
-        const res = await fetch('http://127.0.0.1:8001/api/login/', {
+        const res = await fetch('https://visualhotel.onrender.com/api/login/', {
           method: 'POST',
           headers:{
             'Content-Type': 'application/json',

@@ -163,7 +163,7 @@ export default {
           // Suponiendo que tienes el hotel id en this.reservations[0].hotel.id
           const token = localStorage.getItem('access');
           if (!token) return;
-          const res = await fetch(`http://127.0.0.1:8001/api/rooms/`, {
+          const res = await fetch(`https://visualhotel.onrender.com/api/rooms/`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
@@ -186,7 +186,7 @@ export default {
           try {
             const token = localStorage.getItem('access');
             console.log("RESERVATION DATA:", this.newReservation);
-            const res = await fetch('http://127.0.0.1:8001/api/reserves/', {
+            const res = await fetch('https://visualhotel.onrender.com/api/reserves/', {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -236,7 +236,7 @@ export default {
           try {
             const token = localStorage.getItem('access');
 
-            await fetch(`http://127.0.0.1:8001/api/customers/`, {
+            await fetch(`https://visualhotel.onrender.com/api/customers/`, {
               method: 'PATCH',
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -251,7 +251,7 @@ export default {
               })
             });
 
-            const res = await fetch(`http://127.0.0.1:8001/api/reserves/${this.editReservationData.id}/`, {
+            const res = await fetch(`https://visualhotel.onrender.com/api/reserves/${this.editReservationData.id}/`, {
               method: 'PATCH',
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -287,7 +287,7 @@ export default {
         },
         async fetchReservations() {
             const token = localStorage.getItem('access')
-            const res = await fetch('http://127.0.0.1:8001/api/reserves/', {
+            const res = await fetch('https://visualhotel.onrender.com/api/reserves/', {
                 headers : {
                     'Authorization': `Bearer ${token}`
                 }
@@ -304,7 +304,7 @@ export default {
           if (confirm('¿Estás seguro de que quieres borrar esta reserva?')) {
             const token = localStorage.getItem('access');
             // Borra la reserva
-            const res = await fetch(`http://127.0.0.1:8001/api/reserves/${reservationId}/`, {
+            const res = await fetch(`https://visualhotel.onrender.com/api/reserves/${reservationId}/`, {
               method: 'DELETE',
               headers: {
                 'Authorization': `Bearer ${token}`
@@ -312,7 +312,7 @@ export default {
             });
             if (res.ok) {
               // Cambia el estado de la habitación a Disponible
-              await fetch(`http://127.0.0.1:8001/api/rooms/${roomId}/`, {
+              await fetch(`https://visualhotel.onrender.com/api/rooms/${roomId}/`, {
                 method: 'PATCH',
                 headers: {
                   'Authorization': `Bearer ${token}`,
