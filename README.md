@@ -11,5 +11,6 @@ Backend
 1. cd backend
 2. pip install -r requirements.txt
 3. python manage.py runserver 8001
+4. Para poder acceder a la pagina de administracion es necesario crear un superuser: python manage.py createsuperuser
 
 pagina de administracion local --> http://localhost:8001/admin
