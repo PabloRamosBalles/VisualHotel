@@ -1,5 +1,6 @@
-Para poder inicializar la aplicación es necesario hacer estos pasos
-!Elegir la rama reserve-logic!
+Para poder inicializar la aplicación es necesario hacer estos pasos:
+
+!Elegir la rama reserve-logic! (Main esta en render pero los fetch de GET parecen no funcionar, https://vhotel.onrender.com)
 
 Front
 1. cd frontend
